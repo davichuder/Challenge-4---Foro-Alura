@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.david.foro_alura.dto.categoria.NuevaCategoriaRequest;
+import com.david.foro_alura.exceptions.ExisteException;
 import com.david.foro_alura.dto.categoria.CategoriaResponse;
 import com.david.foro_alura.dto.categoria.EliminarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.ModificarCategoriaRequest;
-import com.david.foro_alura.entity.Categoria;
-import com.david.foro_alura.repository.CategoriaRepository;
+import com.david.foro_alura.services.CategoriaService;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -28,39 +28,36 @@ import jakarta.validation.Valid;
 @RequestMapping("/categorias")
 public class CategoriaController {
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private CategoriaService categoriaService;
 
     @PostMapping
     @Transactional
     public ResponseEntity<CategoriaResponse> nuevaCategoria(
             @RequestBody @Valid NuevaCategoriaRequest nuevaCategoria) {
-        Categoria nueva = categoriaRepository.save(new Categoria(nuevaCategoria));
-        return ResponseEntity.ok(new CategoriaResponse(nueva));
+        return ResponseEntity.ok(new CategoriaResponse(categoriaService.nueva(nuevaCategoria)));
     }
 
     @RequestMapping
-    public ResponseEntity<Page<CategoriaResponse>> listadoCategorias(@PageableDefault(size = 10) Pageable paginacion){
-        return ResponseEntity.ok(categoriaRepository.findAll(paginacion).map(CategoriaResponse::new));
+    public ResponseEntity<Page<CategoriaResponse>> listadoCategorias(@PageableDefault(size = 10) Pageable paginacion) {
+        return ResponseEntity.ok(categoriaService.listado(paginacion));
     }
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity<Object> eliminarCategoria(@RequestBody @Valid EliminarCategoriaRequest eliminarCategoria){       
-        categoriaRepository.deleteById(eliminarCategoria.id());
+    public ResponseEntity<Object> eliminarCategoria(@RequestBody @Valid EliminarCategoriaRequest eliminarCategoria) throws ExisteException {
+        categoriaService.eliminar(eliminarCategoria);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<CategoriaResponse> modificarCategoria(@RequestBody @Valid ModificarCategoriaRequest modificarCategoria){
-        Categoria modificacion = categoriaRepository.getReferenceById(modificarCategoria.id());
-        modificacion.actualizar(modificarCategoria);
-        return ResponseEntity.ok(new CategoriaResponse(modificacion));
+    public ResponseEntity<CategoriaResponse> modificarCategoria(
+            @RequestBody @Valid ModificarCategoriaRequest modificarCategoria) throws ExisteException {
+        return ResponseEntity.ok(new CategoriaResponse(categoriaService.modificar(modificarCategoria)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> verCategoria(@PathVariable Long id){
-        Categoria categoria = categoriaRepository.getReferenceById(id);
-        return ResponseEntity.ok(new CategoriaResponse(categoria));
+    public ResponseEntity<CategoriaResponse> verCategoria(@PathVariable Long id) throws ExisteException {
+        return ResponseEntity.ok(new CategoriaResponse(categoriaService.ver(id)));
     }
 }

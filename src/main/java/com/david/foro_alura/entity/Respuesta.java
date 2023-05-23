@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -23,16 +22,13 @@ public class Respuesta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    private Usuario usuario;
+
     private String mensaje;
 
     @Temporal(TemporalType.TIME)
     private Date fechaDeCreacion;
-
-    @OneToOne
-    private Usuario usuario;
-
-    @ManyToOne
-    private Topico topico;
 
     private Boolean mejorRespuesta;
 }

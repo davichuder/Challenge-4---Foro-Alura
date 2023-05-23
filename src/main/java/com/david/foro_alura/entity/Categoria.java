@@ -2,6 +2,7 @@ package com.david.foro_alura.entity;
 
 import com.david.foro_alura.dto.categoria.ModificarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.NuevaCategoriaRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "categorias")
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
