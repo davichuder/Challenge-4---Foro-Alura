@@ -7,4 +7,5 @@ import com.david.foro_alura.entity.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long>{
+    Boolean existsByNombre(String nombre);
 }

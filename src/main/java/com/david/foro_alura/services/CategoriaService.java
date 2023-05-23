@@ -12,7 +12,8 @@ import com.david.foro_alura.dto.categoria.EliminarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.ModificarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.NuevaCategoriaRequest;
 import com.david.foro_alura.entity.Categoria;
-import com.david.foro_alura.exceptions.ExisteException;
+import com.david.foro_alura.exceptions.DuplicadoException;
+import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.repository.CategoriaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -22,9 +23,10 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    final String nombreEntidadCategoria = Categoria.class.getSimpleName();
-
-    public Categoria nueva(NuevaCategoriaRequest nuevaCategoria) {
+    public Categoria nueva(NuevaCategoriaRequest nuevaCategoria) throws DuplicadoException {
+        if (categoriaRepository.existsByNombre(nuevaCategoria.nombre())){
+            throw new DuplicadoException("nombre");
+        }
         return categoriaRepository.save(new Categoria(nuevaCategoria));
     }
 
@@ -32,18 +34,18 @@ public class CategoriaService {
         return categoriaRepository.findAll(paginacion).map(CategoriaResponse::new);
     }
 
-    public void eliminar(EliminarCategoriaRequest eliminarCategoria) throws ExisteException {
+    public void eliminar(EliminarCategoriaRequest eliminarCategoria) throws NoExisteException {
         Optional<Categoria> categoria = categoriaRepository.findById(eliminarCategoria.id());
         if (!categoria.isPresent()) {
-            throw new ExisteException(nombreEntidadCategoria);
+            throw new NoExisteException("id");
         }
         categoriaRepository.deleteById(eliminarCategoria.id());
     }
 
-    public Categoria modificar(ModificarCategoriaRequest modificarCategoria) throws ExisteException {
+    public Categoria modificar(ModificarCategoriaRequest modificarCategoria) throws NoExisteException {
         Optional<Categoria> categoria = categoriaRepository.findById(modificarCategoria.id());
         if (!categoria.isPresent()) {
-            throw new ExisteException(nombreEntidadCategoria);
+            throw new NoExisteException("id");
         }
         Categoria modificacion = categoriaRepository.getReferenceById(modificarCategoria.id());
         modificacion.actualizar(modificarCategoria);
@@ -53,7 +55,7 @@ public class CategoriaService {
     public Categoria ver(Long id) {
         Optional<Categoria> categoria = categoriaRepository.findById(id);
         if (!categoria.isPresent()) {
-            throw new EntityNotFoundException("Error el ID del " + nombreEntidadCategoria + " no esta existe");
+            throw new EntityNotFoundException("Error el ID de la categoria no existe");
         }
         return categoriaRepository.getReferenceById(id);
     }

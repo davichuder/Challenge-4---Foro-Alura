@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.david.foro_alura.dto.categoria.NuevaCategoriaRequest;
-import com.david.foro_alura.exceptions.ExisteException;
+import com.david.foro_alura.exceptions.DuplicadoException;
+import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.dto.categoria.CategoriaResponse;
 import com.david.foro_alura.dto.categoria.EliminarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.ModificarCategoriaRequest;
@@ -33,7 +34,7 @@ public class CategoriaController {
     @PostMapping
     @Transactional
     public ResponseEntity<CategoriaResponse> nuevaCategoria(
-            @RequestBody @Valid NuevaCategoriaRequest nuevaCategoria) {
+            @RequestBody @Valid NuevaCategoriaRequest nuevaCategoria) throws DuplicadoException {
         return ResponseEntity.ok(new CategoriaResponse(categoriaService.nueva(nuevaCategoria)));
     }
 
@@ -44,7 +45,7 @@ public class CategoriaController {
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity<Object> eliminarCategoria(@RequestBody @Valid EliminarCategoriaRequest eliminarCategoria) throws ExisteException {
+    public ResponseEntity<Object> eliminarCategoria(@RequestBody @Valid EliminarCategoriaRequest eliminarCategoria) throws NoExisteException {
         categoriaService.eliminar(eliminarCategoria);
         return ResponseEntity.noContent().build();
     }
@@ -52,12 +53,12 @@ public class CategoriaController {
     @PutMapping
     @Transactional
     public ResponseEntity<CategoriaResponse> modificarCategoria(
-            @RequestBody @Valid ModificarCategoriaRequest modificarCategoria) throws ExisteException {
+            @RequestBody @Valid ModificarCategoriaRequest modificarCategoria) throws NoExisteException {
         return ResponseEntity.ok(new CategoriaResponse(categoriaService.modificar(modificarCategoria)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> verCategoria(@PathVariable Long id) throws ExisteException {
+    public ResponseEntity<CategoriaResponse> verCategoria(@PathVariable Long id) throws NoExisteException {
         return ResponseEntity.ok(new CategoriaResponse(categoriaService.ver(id)));
     }
 }

@@ -20,7 +20,8 @@ import com.david.foro_alura.dto.curso.CursoResponse;
 import com.david.foro_alura.dto.curso.EliminarCursoRequest;
 import com.david.foro_alura.dto.curso.ModificarCursoRequest;
 import com.david.foro_alura.dto.curso.NuevoCursoRequest;
-import com.david.foro_alura.exceptions.ExisteException;
+import com.david.foro_alura.exceptions.DuplicadoException;
+import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.services.CursoService;
 
 import jakarta.transaction.Transactional;
@@ -35,7 +36,7 @@ public class CursoController {
     @PostMapping
     @Transactional
     public ResponseEntity<CursoResponse> nuevoCurso(
-            @RequestBody @Valid NuevoCursoRequest nuevoCurso) {
+            @RequestBody @Valid NuevoCursoRequest nuevoCurso) throws DuplicadoException {
         return ResponseEntity.ok(new CursoResponse(cursoService.nuevo(nuevoCurso)));
     }
 
@@ -46,14 +47,14 @@ public class CursoController {
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity<Object> eliminarCurso(@RequestBody @Valid EliminarCursoRequest eliminarCurso) throws SQLIntegrityConstraintViolationException, ExisteException {
+    public ResponseEntity<Object> eliminarCurso(@RequestBody @Valid EliminarCursoRequest eliminarCurso) throws NoExisteException {
         cursoService.eliminar(eliminarCurso);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<CursoResponse> modificarCurso(@RequestBody @Valid ModificarCursoRequest modificarCurso) throws SQLIntegrityConstraintViolationException, ExisteException {
+    public ResponseEntity<CursoResponse> modificarCurso(@RequestBody @Valid ModificarCursoRequest modificarCurso) throws NoExisteException {
         return ResponseEntity.ok(new CursoResponse(cursoService.modificar(modificarCurso)));
     }
 

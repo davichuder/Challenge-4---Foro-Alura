@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.david.foro_alura.dto.error.ValidacionError;
-import com.david.foro_alura.exceptions.ExisteException;
+import com.david.foro_alura.exceptions.DuplicadoException;
+import com.david.foro_alura.exceptions.NoExisteException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -25,9 +26,13 @@ public class ErrorAdvice {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    @ExceptionHandler(ExisteException.class)
-    public ResponseEntity<Object> entidadNoEncontrada(ExisteException e) {
-        var errores = e.getMessage();
-        return ResponseEntity.badRequest().body(errores);
+    @ExceptionHandler(NoExisteException.class)
+    public ResponseEntity<Object> entidadNoEncontrada(NoExisteException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicadoException.class)
+    public ResponseEntity<Object> entidadDuplicada(DuplicadoException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

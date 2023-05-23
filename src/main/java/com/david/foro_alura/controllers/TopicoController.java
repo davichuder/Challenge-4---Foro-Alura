@@ -18,7 +18,7 @@ import com.david.foro_alura.dto.topico.EliminarTopicoRequest;
 import com.david.foro_alura.dto.topico.ModificarTopicoRequest;
 import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
 import com.david.foro_alura.dto.topico.TopicoResponse;
-import com.david.foro_alura.exceptions.ExisteException;
+import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.services.TopicoService;
 
 import jakarta.transaction.Transactional;
@@ -32,9 +32,9 @@ public class TopicoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<TopicoResponse> nuevaTopico(
-            @RequestBody @Valid NuevoTopicoRequest nuevaTopico) {
-        return ResponseEntity.ok(new TopicoResponse(topicoService.nuevo(nuevaTopico)));
+    public ResponseEntity<TopicoResponse> nuevoTopico(
+            @RequestBody @Valid NuevoTopicoRequest nuevoTopico) throws NoExisteException {
+        return ResponseEntity.ok(new TopicoResponse(topicoService.nuevo(nuevoTopico)));
     }
 
     @RequestMapping
@@ -44,7 +44,7 @@ public class TopicoController {
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity<Object> eliminarTopico(@RequestBody @Valid EliminarTopicoRequest eliminarTopico) throws ExisteException {
+    public ResponseEntity<Object> eliminarTopico(@RequestBody @Valid EliminarTopicoRequest eliminarTopico) throws NoExisteException {
         topicoService.eliminar(eliminarTopico);
         return ResponseEntity.noContent().build();
     }

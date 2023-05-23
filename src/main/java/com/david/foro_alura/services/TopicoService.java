@@ -13,7 +13,7 @@ import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
 import com.david.foro_alura.dto.topico.TopicoResponse;
 import com.david.foro_alura.entity.Curso;
 import com.david.foro_alura.entity.Topico;
-import com.david.foro_alura.exceptions.ExisteException;
+import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.repository.CursoRepository;
 import com.david.foro_alura.repository.TopicoRepository;
 
@@ -29,10 +29,10 @@ public class TopicoService {
 
     final String nombreEntidadTopico = Topico.class.getSimpleName();
 
-    public Topico nuevo(NuevoTopicoRequest nuevoTopico) throws ExisteException {
+    public Topico nuevo(NuevoTopicoRequest nuevoTopico) throws NoExisteException {
         Optional<Curso> curso = cursoRepository.findById(nuevoTopico.idCurso());
         if (!curso.isPresent()){
-            throw new ExisteException(nombreEntidadTopico);
+            throw new NoExisteException(nombreEntidadTopico);
         }
         return topicoRepository.save(new Topico(nuevoTopico, curso.get()));
     }
@@ -41,10 +41,10 @@ public class TopicoService {
         return topicoRepository.findAll(paginacion).map(TopicoResponse::new);
     }
 
-    public void eliminar(EliminarTopicoRequest eliminarTopico) throws ExisteException {
+    public void eliminar(EliminarTopicoRequest eliminarTopico) throws NoExisteException {
         Optional<Topico> topico = topicoRepository.findById(eliminarTopico.id());
         if (!topico.isPresent()) {
-            throw new ExisteException(nombreEntidadTopico);
+            throw new NoExisteException(nombreEntidadTopico);
         }
         topicoRepository.deleteById(eliminarTopico.id());
     }
