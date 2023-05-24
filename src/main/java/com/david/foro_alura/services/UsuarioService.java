@@ -51,12 +51,15 @@ public class UsuarioService {
         desactivar.desactivar();
     }
 
-    public Usuario modificar(ModificarUsuarioRequest modificarUsuario) throws NoExisteException {
+    public Usuario modificar(ModificarUsuarioRequest modificarUsuario) throws NoExisteException, DuplicadoException {
         Optional<Usuario> usuario = usuarioRepository.findById(modificarUsuario.id());
         if (!usuario.isPresent()) {
             throw new NoExisteException("id");
         }
-        Usuario modificacion = usuarioRepository.getReferenceById(modificarUsuario.id());
+        if (!usuarioRepository.existsByEmail(modificarUsuario.email())){
+            throw new DuplicadoException("email");
+        }
+        Usuario modificacion = usuario.get();
         modificacion.actualizar(modificarUsuario);
         return modificacion;
     }
@@ -66,6 +69,6 @@ public class UsuarioService {
         if (!usuario.isPresent()) {
             throw new EntityNotFoundException("Error el ID del usuario no existe");
         }
-        return usuarioRepository.getReferenceById(id);
+        return usuario.get();
     }
 }

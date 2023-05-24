@@ -3,6 +3,7 @@ package com.david.foro_alura.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.david.foro_alura.dto.topico.ModificarTopicoRequest;
 import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
 import com.david.foro_alura.enums.Estatus;
 import com.david.foro_alura.enums.Tag;
@@ -13,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -30,7 +32,7 @@ public class Topico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Usuario usuario;
     
     private String titulo;
@@ -42,7 +44,7 @@ public class Topico {
     @Enumerated(EnumType.STRING)
     private Estatus estatus;
 
-    @OneToOne
+    @ManyToOne
     private Curso curso;
 
     @Enumerated(EnumType.STRING)
@@ -51,13 +53,31 @@ public class Topico {
     @OneToMany
     private List<Respuesta> respuestas;
 
-    public Topico(NuevoTopicoRequest nuevoTopico, Curso curso) {
-        this.usuario = nuevoTopico.usuario();
+    public Topico(NuevoTopicoRequest nuevoTopico, Usuario usuario, Curso curso) {
+        this.usuario = usuario;
         this.titulo = nuevoTopico.titulo();
         this.mensaje = nuevoTopico.mensaje();
         this.fechaDeCreacion = new Date();
         this.estatus = Estatus.SIN_RESPUESTAS;
         this.curso = curso;
         this.tag = nuevoTopico.tag();
+    }
+
+    public void agregarRespuesta(Respuesta respuesta) {
+        this.respuestas.add(respuesta);
+        if (this.respuestas.size() > 0){
+            this.estatus = Estatus.SIN_SOLUCION;   
+        }
+    }
+
+    public void actualizar(ModificarTopicoRequest modificarTopico, Curso curso) {
+        this.titulo = modificarTopico.titulo();
+        this.mensaje = modificarTopico.mensaje();
+        this.tag = modificarTopico.tag();
+        this.curso = curso;
+    }
+
+    public void marcarComoResuelto() {
+        this.estatus = Estatus.RESUELTO;
     }
 }

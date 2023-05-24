@@ -11,7 +11,6 @@ import com.david.foro_alura.dto.curso.CursoResponse;
 import com.david.foro_alura.dto.curso.EliminarCursoRequest;
 import com.david.foro_alura.dto.curso.ModificarCursoRequest;
 import com.david.foro_alura.dto.curso.NuevoCursoRequest;
-import com.david.foro_alura.entity.Categoria;
 import com.david.foro_alura.entity.Curso;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
@@ -41,8 +40,7 @@ public class CursoService {
     }
 
     public void eliminar(EliminarCursoRequest eliminarCurso) throws NoExisteException {
-        Optional<Curso> curso = cursoRepository.findById(eliminarCurso.id());
-        if (!curso.isPresent()) {
+        if (!cursoRepository.existsById(eliminarCurso.id())) {
             throw new NoExisteException("id");
         }
         cursoRepository.deleteById(eliminarCurso.id());
@@ -53,12 +51,11 @@ public class CursoService {
         if (!curso.isPresent()) {
             throw new NoExisteException("id");
         }
-        Optional<Categoria> categoria = categoriaRepository.findById(modificarCurso.idCategoria());
-        if (!categoria.isPresent()) {
+        if (!categoriaRepository.existsById(modificarCurso.id())) {
             throw new NoExisteException("idCategoria");
         }
         Curso modificacion = curso.get();
-        modificacion.actualizar(modificarCurso.nombre(), categoria.get());
+        modificacion.actualizar(modificarCurso.nombre(), categoriaRepository.getReferenceById(modificarCurso.id()));
         return modificacion;
     }
 

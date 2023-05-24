@@ -1,7 +1,5 @@
 package com.david.foro_alura.controllers;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

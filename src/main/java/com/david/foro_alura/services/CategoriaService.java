@@ -35,8 +35,7 @@ public class CategoriaService {
     }
 
     public void eliminar(EliminarCategoriaRequest eliminarCategoria) throws NoExisteException {
-        Optional<Categoria> categoria = categoriaRepository.findById(eliminarCategoria.id());
-        if (!categoria.isPresent()) {
+        if (!categoriaRepository.existsById(eliminarCategoria.id())) {
             throw new NoExisteException("id");
         }
         categoriaRepository.deleteById(eliminarCategoria.id());
@@ -47,7 +46,7 @@ public class CategoriaService {
         if (!categoria.isPresent()) {
             throw new NoExisteException("id");
         }
-        Categoria modificacion = categoriaRepository.getReferenceById(modificarCategoria.id());
+        Categoria modificacion = categoria.get();
         modificacion.actualizar(modificarCategoria);
         return modificacion;
     }
@@ -57,6 +56,6 @@ public class CategoriaService {
         if (!categoria.isPresent()) {
             throw new EntityNotFoundException("Error el ID de la categoria no existe");
         }
-        return categoriaRepository.getReferenceById(id);
+        return categoria.get();
     }
 }

@@ -2,10 +2,14 @@ package com.david.foro_alura.entity;
 
 import java.util.Date;
 
+import com.david.foro_alura.dto.respuesta.ModificarRespuestaRequest;
+import com.david.foro_alura.dto.respuesta.NuevaRespuestaRequest;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -22,7 +26,7 @@ public class Respuesta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Usuario usuario;
 
     private String mensaje;
@@ -31,4 +35,19 @@ public class Respuesta {
     private Date fechaDeCreacion;
 
     private Boolean mejorRespuesta;
+
+    public Respuesta(NuevaRespuestaRequest nuevaRespuesta, Usuario usuario) {
+        this.usuario = usuario;
+        this.mensaje = nuevaRespuesta.mensaje();
+        this.fechaDeCreacion = new Date();
+        this.mejorRespuesta = false;
+    }
+
+    public void actualizar(ModificarRespuestaRequest modificarRespuesta) {
+        this.mensaje = modificarRespuesta.mensaje();
+    }
+
+    public void marcarComoSolucion() {
+        this.mejorRespuesta = true;
+    }
 }

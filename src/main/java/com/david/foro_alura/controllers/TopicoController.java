@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.david.foro_alura.dto.topico.EliminarTopicoRequest;
 import com.david.foro_alura.dto.topico.ModificarTopicoRequest;
 import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
+import com.david.foro_alura.dto.topico.SolucionTopicoRequest;
 import com.david.foro_alura.dto.topico.TopicoResponse;
+import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
+import com.david.foro_alura.exceptions.TopicoResultoException;
 import com.david.foro_alura.services.TopicoService;
 
 import jakarta.transaction.Transactional;
@@ -44,20 +47,28 @@ public class TopicoController {
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity<Object> eliminarTopico(@RequestBody @Valid EliminarTopicoRequest eliminarTopico) throws NoExisteException {
+    public ResponseEntity<Object> eliminarTopico(@RequestBody @Valid EliminarTopicoRequest eliminarTopico)
+            throws NoExisteException {
         topicoService.eliminar(eliminarTopico);
         return ResponseEntity.noContent().build();
     }
 
-    // @PutMapping
-    // @Transactional
-    // public ResponseEntity<TopicoResponse> modificarTopico(
-    //         @RequestBody @Valid ModificarTopicoRequest modificarTopico) throws ExisteException {
-    //     return ResponseEntity.ok(new TopicoResponse(topicoService.modificar(modificarTopico)));
-    // }
+    @PutMapping
+    @Transactional
+    public ResponseEntity<TopicoResponse> modificarTopico(
+            @RequestBody @Valid ModificarTopicoRequest modificarTopico) throws DuplicadoException, NoExisteException {
+        return ResponseEntity.ok(new TopicoResponse(topicoService.modificar(modificarTopico)));
+    }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<TopicoResponse> verTopico(@PathVariable Long id) throws ExisteException {
-    //     return ResponseEntity.ok(new TopicoResponse(topicoService.ver(id)));
-    // }
+    @GetMapping("/{id}")
+    public ResponseEntity<TopicoResponse> verTopico(@PathVariable Long id) {
+        return ResponseEntity.ok(new TopicoResponse(topicoService.ver(id)));
+    }
+
+    @PostMapping("/{idTopico}")
+    @Transactional
+    public ResponseEntity<TopicoResponse> marcarComoSolucion(@PathVariable Long idTopico,
+            @RequestBody @Valid SolucionTopicoRequest solucionTopico) throws NoExisteException, TopicoResultoException {
+        return ResponseEntity.ok(new TopicoResponse(topicoService.marcarComoSolucion(idTopico, solucionTopico)));
+    }
 }

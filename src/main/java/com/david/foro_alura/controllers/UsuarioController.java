@@ -53,7 +53,7 @@ public class UsuarioController {
     @PutMapping
     @Transactional
     public ResponseEntity<UsuarioResponse> modificarUsuario(
-            @RequestBody @Valid ModificarUsuarioRequest modificarUsuario) throws NoExisteException {
+            @RequestBody @Valid ModificarUsuarioRequest modificarUsuario) throws NoExisteException, DuplicadoException {
         return ResponseEntity.ok(new UsuarioResponse(usuarioService.modificar(modificarUsuario)));
     }
 
