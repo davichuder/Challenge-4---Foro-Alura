@@ -7,4 +7,7 @@ import com.david.foro_alura.entity.Topico;
 
 @Repository
 public interface TopicoRepository extends JpaRepository<Topico, Long>{
+    Boolean existsByTitulo(String titulo);
+
+    boolean existsByMensaje(String mensaje);
 }

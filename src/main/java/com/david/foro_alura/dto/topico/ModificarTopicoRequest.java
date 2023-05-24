@@ -1,5 +1,13 @@
 package com.david.foro_alura.dto.topico;
 
-public class ModificarTopicoRequest {
-    
+import com.david.foro_alura.enums.Tag;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record ModificarTopicoRequest(@NotNull Long idTopico,
+        @NotNull Long idCurso,
+        @NotBlank String titulo,
+        @NotBlank String mensaje,
+        @NotNull Tag tag) {
 }

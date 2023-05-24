@@ -33,7 +33,8 @@ public class UsuarioController {
 
     @PostMapping()
     @Transactional
-    public ResponseEntity<String> nuevoUsuario(@RequestBody @Valid NuevoUsuarioRequest nuevoUsuario) {
+    public ResponseEntity<String> nuevoUsuario(@RequestBody @Valid NuevoUsuarioRequest nuevoUsuario) throws DuplicadoException {
+        usuarioService.nuevo(nuevoUsuario);
         return ResponseEntity.ok("DEFINIR QUE RESPONDER");
     }
 
@@ -41,7 +42,7 @@ public class UsuarioController {
     public ResponseEntity<Page<UsuarioResponse>> listadoUsuarios(@PageableDefault(size = 10) Pageable paginacion) {
         return ResponseEntity.ok(usuarioService.listado(paginacion));
     }
-
+    
     @DeleteMapping
     @Transactional
     public ResponseEntity<Object> desactivarUsuario(@RequestBody @Valid DesactivarUsuarioRequest desactivarUsuario)

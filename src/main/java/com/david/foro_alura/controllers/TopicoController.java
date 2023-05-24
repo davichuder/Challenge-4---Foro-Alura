@@ -18,6 +18,7 @@ import com.david.foro_alura.dto.topico.EliminarTopicoRequest;
 import com.david.foro_alura.dto.topico.ModificarTopicoRequest;
 import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
 import com.david.foro_alura.dto.topico.TopicoResponse;
+import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.services.TopicoService;
 
@@ -33,7 +34,7 @@ public class TopicoController {
     @PostMapping
     @Transactional
     public ResponseEntity<TopicoResponse> nuevoTopico(
-            @RequestBody @Valid NuevoTopicoRequest nuevoTopico) throws NoExisteException {
+            @RequestBody @Valid NuevoTopicoRequest nuevoTopico) throws NoExisteException, DuplicadoException {
         return ResponseEntity.ok(new TopicoResponse(topicoService.nuevo(nuevoTopico)));
     }
 
@@ -49,15 +50,15 @@ public class TopicoController {
         return ResponseEntity.noContent().build();
     }
 
-    // @PutMapping
-    // @Transactional
-    // public ResponseEntity<TopicoResponse> modificarTopico(
-    //         @RequestBody @Valid ModificarTopicoRequest modificarTopico) throws ExisteException {
-    //     return ResponseEntity.ok(new TopicoResponse(topicoService.modificar(modificarTopico)));
-    // }
+    @PutMapping
+    @Transactional
+    public ResponseEntity<TopicoResponse> modificarTopico(
+            @RequestBody @Valid ModificarTopicoRequest modificarTopico) throws DuplicadoException, NoExisteException{
+        return ResponseEntity.ok(new TopicoResponse(topicoService.modificar(modificarTopico)));
+    }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<TopicoResponse> verTopico(@PathVariable Long id) throws ExisteException {
-    //     return ResponseEntity.ok(new TopicoResponse(topicoService.ver(id)));
-    // }
+    @GetMapping("/{id}")
+    public ResponseEntity<TopicoResponse> verTopico(@PathVariable Long id){
+        return ResponseEntity.ok(new TopicoResponse(topicoService.ver(id)));
+    }
 }
