@@ -39,7 +39,7 @@ public class UsuarioService {
     }
 
     public Page<UsuarioResponse> listado(Pageable paginacion) {
-        return usuarioRepository.findAll(paginacion).map(UsuarioResponse::new);
+        return usuarioRepository.findAllByActivo(true, paginacion).map(UsuarioResponse::new);
     }
 
     public void desactivar(DesactivarUsuarioRequest desactivarUsuario) throws NoExisteException {
@@ -66,7 +66,7 @@ public class UsuarioService {
 
     public Usuario ver(Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
-        if (!usuario.isPresent()) {
+        if (!usuario.isPresent() | !usuario.get().getActivo()) {
             throw new EntityNotFoundException("Error el ID del usuario no existe");
         }
         return usuario.get();

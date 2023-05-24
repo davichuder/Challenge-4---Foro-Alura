@@ -14,8 +14,6 @@ import com.david.foro_alura.dto.topico.SolucionTopicoRequest;
 import com.david.foro_alura.dto.topico.TopicoResponse;
 import com.david.foro_alura.entity.Respuesta;
 import com.david.foro_alura.entity.Topico;
-import com.david.foro_alura.enums.Estatus;
-import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.exceptions.TopicoResultoException;
 import com.david.foro_alura.repository.CursoRepository;
@@ -33,23 +31,14 @@ public class TopicoService {
     @Autowired
     private CursoRepository cursoRepository;
 
-    @Autowired
-    private RespuestaRepository respuestaRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    final String nombreEntidadTopico = Topico.class.getSimpleName();
 
     public Topico nuevo(NuevoTopicoRequest nuevoTopico) throws NoExisteException {
-        if (!usuarioRepository.existsById(nuevoTopico.idUsuario())) {
-            throw new NoExisteException("idCurso");
+        Optional<Curso> curso = cursoRepository.findById(nuevoTopico.idCurso());
+        if (!curso.isPresent()){
+            throw new NoExisteException(nombreEntidadTopico);
         }
-        if (!cursoRepository.existsById(nuevoTopico.idCurso())) {
-            throw new NoExisteException("idCurso");
-        }
-        return topicoRepository
-                .save(new Topico(nuevoTopico, usuarioRepository.getReferenceById(nuevoTopico.idUsuario()),
-                        cursoRepository.getReferenceById(nuevoTopico.idCurso())));
-        
+        return topicoRepository.save(new Topico(nuevoTopico, curso.get()));
     }
 
     public Page<TopicoResponse> listado(Pageable paginacion) {
@@ -57,53 +46,27 @@ public class TopicoService {
     }
 
     public void eliminar(EliminarTopicoRequest eliminarTopico) throws NoExisteException {
-        if (!topicoRepository.existsById(eliminarTopico.id())) {
-            throw new NoExisteException("id");
+        Optional<Topico> topico = topicoRepository.findById(eliminarTopico.id());
+        if (!topico.isPresent()) {
+            throw new NoExisteException(nombreEntidadTopico);
         }
         topicoRepository.deleteById(eliminarTopico.id());
     }
 
-    public Topico modificar(ModificarTopicoRequest modificarTopico) throws DuplicadoException, NoExisteException {
-        Optional<Topico> topico = topicoRepository.findById(modificarTopico.idTopico());
-        if (!topico.isPresent()) {
-            throw new DuplicadoException("idTopico");
-        }
-        if (!cursoRepository.existsById(modificarTopico.idCurso())) {
-            throw new NoExisteException("idCurso");
-        }
-        if (!topicoRepository.existsByTitulo(modificarTopico.titulo())) {
-            throw new DuplicadoException("titulo");
-        }
-        if (!topicoRepository.existsByMensaje(modificarTopico.mensaje())) {
-            throw new DuplicadoException("mensaje");
-        }
-        Topico modificacion = topico.get();
-        modificacion.actualizar(modificarTopico,
-                cursoRepository.getReferenceById(modificarTopico.idCurso()));
-        return modificacion;
-    }
+    // public Topico modificar(ModificarTopicoRequest modificarTopico) throws ExisteException {
+    //     Optional<Topico> topico = topicoRepository.findById(modificarTopico.id());
+    //     if (!topico.isPresent()) {
+    //         throw new ExisteException(nombreEntidadTopico);
+    //     }
+    //     Topico modificacion = topicoRepository.getReferenceById(modificarTopico.id());
+    //     modificacion.actualizar(modificarTopico);
+    //     return modificacion;
+    // }
 
     public Topico ver(Long id) {
         Optional<Topico> topico = topicoRepository.findById(id);
         if (!topico.isPresent()) {
-            throw new EntityNotFoundException("Error el ID del topico no existe");
-        }
-        return topico.get();
-    }
-
-    public Topico marcarComoSolucion(Long idTopico, SolucionTopicoRequest solucionTopico)
-            throws NoExisteException, TopicoResultoException {
-        Optional<Topico> topico = topicoRepository.findById(idTopico);
-        if (!topico.isPresent()) {
-            throw new NoExisteException("idTopico");
-        }
-        Topico topicoSolucion = topico.get();
-        if (topicoSolucion.getEstatus().equals(Estatus.RESUELTO)) {
-            throw new TopicoResultoException(idTopico);
-        }
-        Optional<Respuesta> respuesta = respuestaRepository.findById(solucionTopico.idSolucion());
-        if (!respuesta.isPresent()) {
-            throw new NoExisteException("idRespuesta");
+            throw new EntityNotFoundException("Error el ID del " + nombreEntidadTopico + " no esta existe");
         }
         Respuesta respuestaSolucion = respuesta.get();
         topicoSolucion.marcarComoResuelto();

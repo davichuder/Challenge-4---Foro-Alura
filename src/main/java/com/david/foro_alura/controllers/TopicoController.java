@@ -36,7 +36,7 @@ public class TopicoController {
     @PostMapping
     @Transactional
     public ResponseEntity<TopicoResponse> nuevoTopico(
-            @RequestBody @Valid NuevoTopicoRequest nuevoTopico) throws NoExisteException {
+            @RequestBody @Valid NuevoTopicoRequest nuevoTopico) throws NoExisteException, DuplicadoException {
         return ResponseEntity.ok(new TopicoResponse(topicoService.nuevo(nuevoTopico)));
     }
 
