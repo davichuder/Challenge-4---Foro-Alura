@@ -17,8 +17,6 @@ import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.repository.UsuarioRepository;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @Service
 public class UsuarioService {
     @Autowired
@@ -56,7 +54,7 @@ public class UsuarioService {
         if (!usuario.isPresent()) {
             throw new NoExisteException("id");
         }
-        if (!usuarioRepository.existsByEmail(modificarUsuario.email())){
+        if (usuarioRepository.existsByEmail(modificarUsuario.email())){
             throw new DuplicadoException("email");
         }
         Usuario modificacion = usuario.get();
@@ -64,10 +62,10 @@ public class UsuarioService {
         return modificacion;
     }
 
-    public Usuario ver(Long id) {
+    public Usuario ver(Long id) throws NoExisteException {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
-        if (!usuario.isPresent() | !usuario.get().getActivo()) {
-            throw new EntityNotFoundException("Error el ID del usuario no existe");
+        if (!usuario.isPresent() || !usuario.get().getActivo()) {
+            throw new NoExisteException("id");
         }
         return usuario.get();
     }

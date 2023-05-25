@@ -17,7 +17,7 @@ import com.david.foro_alura.entity.Usuario;
 import com.david.foro_alura.enums.Estatus;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
-import com.david.foro_alura.exceptions.TopicoResultoException;
+import com.david.foro_alura.exceptions.TopicoResueltoException;
 import com.david.foro_alura.repository.RespuestaRepository;
 import com.david.foro_alura.repository.TopicoRepository;
 import com.david.foro_alura.repository.UsuarioRepository;
@@ -35,23 +35,25 @@ public class RespuestaService {
     @Autowired
     private TopicoRepository topicoRepository;
 
-    public Respuesta nueva(NuevaRespuestaRequest nuevaRespuesta) throws NoExisteException, DuplicadoException, TopicoResultoException {
-        if (!topicoRepository.existsById(nuevaRespuesta.idTopico())){
+    public Respuesta nueva(NuevaRespuestaRequest nuevaRespuesta) throws NoExisteException, DuplicadoException, TopicoResueltoException {
+        Optional<Topico> topico = topicoRepository.findById(nuevaRespuesta.idTopico());
+        if (!topico.isPresent()){
             throw new NoExisteException("idTopico");
         }
-        if (!usuarioRepository.existsById(nuevaRespuesta.idUsuario())){
+        Topico actualizarTopico = topico.get();
+        if (actualizarTopico.getEstatus().equals(Estatus.RESUELTO)){
+            throw new TopicoResueltoException(nuevaRespuesta.idTopico());
+        }
+        Optional<Usuario> usuario = usuarioRepository.findById(nuevaRespuesta.idUsuario());
+        if (!usuario.isPresent()){
             throw new NoExisteException("idUsuario");
         }
         if (respuestaRepository.existsByMensaje(nuevaRespuesta.mensaje())){
             throw new DuplicadoException("mensaje");
         }
-        Topico topico = topicoRepository.getReferenceById(nuevaRespuesta.idTopico());
-        if (topico.getEstatus().equals(Estatus.RESUELTO)){
-            throw new TopicoResultoException(nuevaRespuesta.idTopico());
-        }
-        Usuario usuario = usuarioRepository.getReferenceById(nuevaRespuesta.idTopico());
-        Respuesta respuesta = respuestaRepository.save(new Respuesta(nuevaRespuesta, usuario));
-        topico.agregarRespuesta(respuesta);
+        Respuesta respuesta = new Respuesta(nuevaRespuesta, usuario.get());
+        respuestaRepository.save(respuesta);
+        actualizarTopico.agregarRespuesta(respuesta);
         return respuesta;
     }
 
@@ -60,9 +62,12 @@ public class RespuestaService {
     }
 
     public void eliminar(EliminarRespuestaRequest eliminarRespuesta) throws NoExisteException {
-        if (!respuestaRepository.existsById(eliminarRespuesta.id())) {
+        Optional<Respuesta> respuesta = respuestaRepository.findById(eliminarRespuesta.id());
+        if (!respuesta.isPresent()) {
             throw new NoExisteException("id");
         }
+        Topico topico = topicoRepository.topicoWithIdRespuesta(eliminarRespuesta.id());
+        topico.removerRespuesta(respuesta.get());
         respuestaRepository.deleteById(eliminarRespuesta.id());
     }
 
@@ -71,7 +76,7 @@ public class RespuestaService {
         if (!respuesta.isPresent()) {
             throw new NoExisteException("id");
         }
-        if (!respuestaRepository.existsByMensaje(modificarRespuesta.mensaje())){
+        if (respuestaRepository.existsByMensaje(modificarRespuesta.mensaje())){
             throw new DuplicadoException("mensaje");
         }
         Respuesta modificacion = respuesta.get();

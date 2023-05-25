@@ -59,7 +59,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> verUsuario(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponse> verUsuario(@PathVariable Long id) throws NoExisteException {
         return ResponseEntity.ok(new UsuarioResponse(usuarioService.ver(id)));
     }
 }

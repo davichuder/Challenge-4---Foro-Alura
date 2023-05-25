@@ -27,12 +27,15 @@ public class CursoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public Curso nuevo(NuevoCursoRequest nuevoCurso) throws DuplicadoException {
-        if (categoriaRepository.existsByNombre(nuevoCurso.nombre())) {
+    public Curso nuevo(NuevoCursoRequest nuevoCurso) throws DuplicadoException, NoExisteException {
+        if (cursoRepository.existsByNombre(nuevoCurso.nombre())) {
             throw new DuplicadoException("nombre");
         }
-        return cursoRepository
-                .save(new Curso(nuevoCurso.nombre(), categoriaRepository.getReferenceById(nuevoCurso.idCategoria())));
+        if (!categoriaRepository.existsById(nuevoCurso.idCategoria())) {
+            throw new NoExisteException("idCategoria");
+        }
+        return cursoRepository.save(new Curso(nuevoCurso.nombre(),
+                categoriaRepository.getReferenceById(nuevoCurso.idCategoria())));
     }
 
     public Page<CursoResponse> listado(Pageable paginacion) {

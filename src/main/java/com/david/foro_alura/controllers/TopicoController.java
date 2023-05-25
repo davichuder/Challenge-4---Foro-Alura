@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.david.foro_alura.dto.topico.DetallesTopicoResponse;
 import com.david.foro_alura.dto.topico.EliminarTopicoRequest;
 import com.david.foro_alura.dto.topico.ModificarTopicoRequest;
 import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
@@ -21,7 +22,8 @@ import com.david.foro_alura.dto.topico.SolucionTopicoRequest;
 import com.david.foro_alura.dto.topico.TopicoResponse;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
-import com.david.foro_alura.exceptions.TopicoResultoException;
+import com.david.foro_alura.exceptions.RespuestaNoCorrespondeException;
+import com.david.foro_alura.exceptions.TopicoResueltoException;
 import com.david.foro_alura.services.TopicoService;
 
 import jakarta.transaction.Transactional;
@@ -61,14 +63,14 @@ public class TopicoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TopicoResponse> verTopico(@PathVariable Long id) {
-        return ResponseEntity.ok(new TopicoResponse(topicoService.ver(id)));
+    public ResponseEntity<DetallesTopicoResponse> verTopico(@PathVariable Long id) throws NoExisteException {
+        return ResponseEntity.ok(new DetallesTopicoResponse(topicoService.ver(id)));
     }
 
     @PostMapping("/{idTopico}")
     @Transactional
     public ResponseEntity<TopicoResponse> marcarComoSolucion(@PathVariable Long idTopico,
-            @RequestBody @Valid SolucionTopicoRequest solucionTopico) throws NoExisteException, TopicoResultoException {
+            @RequestBody @Valid SolucionTopicoRequest solucionTopico) throws NoExisteException, TopicoResueltoException, RespuestaNoCorrespondeException {
         return ResponseEntity.ok(new TopicoResponse(topicoService.marcarComoSolucion(idTopico, solucionTopico)));
     }
 }

@@ -2,7 +2,6 @@ package com.david.foro_alura.advices;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.david.foro_alura.dto.error.ValidacionError;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
+import com.david.foro_alura.exceptions.RespuestaNoCorrespondeException;
+import com.david.foro_alura.exceptions.TopicoResueltoException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -37,13 +38,13 @@ public class ErrorAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Object> entidadDuplicada(HttpMessageNotReadableException e) {
+    @ExceptionHandler(TopicoResueltoException.class)
+    public ResponseEntity<Object> topicoResuelto(TopicoResueltoException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    // @ExceptionHandler(ExceptionHandlerExceptionResolver.class)
-    // public ResponseEntity<Object> enumIncorrecto(ExceptionHandlerExceptionResolver e) {
-    //     return ResponseEntity.badRequest().body(e.getMessage());
-    // }
+    @ExceptionHandler(RespuestaNoCorrespondeException.class)
+    public ResponseEntity<Object> respuestaNoCorresponde(RespuestaNoCorrespondeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

@@ -20,7 +20,7 @@ import com.david.foro_alura.dto.respuesta.NuevaRespuestaRequest;
 import com.david.foro_alura.dto.respuesta.RespuestaResponse;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
-import com.david.foro_alura.exceptions.TopicoResultoException;
+import com.david.foro_alura.exceptions.TopicoResueltoException;
 import com.david.foro_alura.services.RespuestaService;
 
 import jakarta.transaction.Transactional;
@@ -35,7 +35,7 @@ public class RespuestaController {
     @PostMapping
     @Transactional
     public ResponseEntity<RespuestaResponse> nuevaRespuesta(
-            @RequestBody @Valid NuevaRespuestaRequest nuevaRespuesta) throws DuplicadoException, NoExisteException, TopicoResultoException {
+            @RequestBody @Valid NuevaRespuestaRequest nuevaRespuesta) throws DuplicadoException, NoExisteException, TopicoResueltoException {
         return ResponseEntity.ok(new RespuestaResponse(respuestaService.nueva(nuevaRespuesta)));
     }
 

@@ -79,4 +79,8 @@ public class Topico {
     public void marcarComoResuelto() {
         this.estatus = Estatus.RESUELTO;
     }
+
+    public void removerRespuesta(Respuesta respuesta) {
+        this.respuestas.remove(respuesta);
+    }
 }

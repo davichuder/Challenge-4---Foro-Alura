@@ -34,7 +34,7 @@ public class CursoController {
     @PostMapping
     @Transactional
     public ResponseEntity<CursoResponse> nuevoCurso(
-            @RequestBody @Valid NuevoCursoRequest nuevoCurso) throws DuplicadoException {
+            @RequestBody @Valid NuevoCursoRequest nuevoCurso) throws DuplicadoException, NoExisteException {
         return ResponseEntity.ok(new CursoResponse(cursoService.nuevo(nuevoCurso)));
     }
 
