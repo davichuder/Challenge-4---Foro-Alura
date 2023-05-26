@@ -25,6 +25,6 @@ public class RegistroController {
     public ResponseEntity<String> registroUsuario(
             @RequestBody @Valid RegistroUsuarioRequest registroUsuario) throws DuplicadoException {
         usuarioService.registro(registroUsuario);
-        return ResponseEntity.ok("DEFINIR QUE RESPONDER");
+        return ResponseEntity.ok("Registro correcto");
     }
 }

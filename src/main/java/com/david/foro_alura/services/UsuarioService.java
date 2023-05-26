@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.david.foro_alura.dto.usuario.DesactivarUsuarioRequest;
 import com.david.foro_alura.dto.usuario.ModificarUsuarioRequest;
-import com.david.foro_alura.dto.usuario.NuevoUsuarioRequest;
 import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.dto.usuario.UsuarioResponse;
 import com.david.foro_alura.entity.Usuario;
@@ -27,13 +26,6 @@ public class UsuarioService {
             throw new DuplicadoException("email");
         }
         usuarioRepository.save(new Usuario(registroUsuario));
-    }
-
-    public Usuario nuevo(NuevoUsuarioRequest nuevoUsuario) throws DuplicadoException {
-        if (usuarioRepository.existsByEmail(nuevoUsuario.email())) {
-            throw new DuplicadoException("email");
-        }
-        return usuarioRepository.save(new Usuario(nuevoUsuario));
     }
 
     public Page<UsuarioResponse> listado(Pageable paginacion) {

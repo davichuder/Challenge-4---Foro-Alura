@@ -1,7 +1,14 @@
 package com.david.foro_alura.entity;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import com.david.foro_alura.dto.usuario.ModificarUsuarioRequest;
-import com.david.foro_alura.dto.usuario.NuevoUsuarioRequest;
 import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.enums.Rol;
 
@@ -19,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "usuarios")
 @Data
 @NoArgsConstructor
-public class Usuario {
+public class Usuario implements UserDetails{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -27,23 +34,16 @@ public class Usuario {
 	private String email;
 	private String password;
 
+	private Boolean activo;
+
 	@Enumerated(EnumType.STRING)
 	private Rol rol;
 
-	private Boolean activo;
-
 	public Usuario(RegistroUsuarioRequest registroUsuario) {
 		this.email = registroUsuario.email();
-		this.password = registroUsuario.password();
+		this.password = new BCryptPasswordEncoder().encode(registroUsuario.password());
+		this.activo = true;
 		this.rol = Rol.USUARIO;
-		this.activo = true;
-	}
-
-	public Usuario(NuevoUsuarioRequest nuevoUsuario) {
-		this.email = nuevoUsuario.email();
-		this.password = nuevoUsuario.password();
-		this.rol = nuevoUsuario.rol();
-		this.activo = true;
 	}
 
 	public void actualizar(ModificarUsuarioRequest modificarUsuario) {
@@ -53,5 +53,35 @@ public class Usuario {
 
 	public void desactivar() {
 		this.activo = false;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority("ROLE_" + this.rol.toString()));
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
 	}
 }

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.david.foro_alura.dto.usuario.DesactivarUsuarioRequest;
 import com.david.foro_alura.dto.usuario.ModificarUsuarioRequest;
-import com.david.foro_alura.dto.usuario.NuevoUsuarioRequest;
 import com.david.foro_alura.dto.usuario.UsuarioResponse;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
@@ -30,13 +28,6 @@ import jakarta.validation.Valid;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
-
-    @PostMapping()
-    @Transactional
-    public ResponseEntity<String> nuevoUsuario(@RequestBody @Valid NuevoUsuarioRequest nuevoUsuario) throws DuplicadoException {
-        usuarioService.nuevo(nuevoUsuario);
-        return ResponseEntity.ok("DEFINIR QUE RESPONDER");
-    }
 
     @RequestMapping
     public ResponseEntity<Page<UsuarioResponse>> listadoUsuarios(@PageableDefault(size = 10) Pageable paginacion) {
