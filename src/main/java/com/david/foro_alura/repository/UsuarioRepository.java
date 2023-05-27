@@ -20,4 +20,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 
     @Query("SELECT u FROM Usuario u WHERE u.email = :email")
     Optional<Usuario> buscarPorEmail(@Param("email") String email);
+
+    @Query("SELECT COUNT(u) > 0 FROM Usuario u")
+    Boolean hayUsuarios();
 }

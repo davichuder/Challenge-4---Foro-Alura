@@ -23,7 +23,7 @@ public class SpringdocConfig {
                 api.info(new Info()
                                 .title("Foro Alura")
                                 .version("1.0.0")
-                                .description("Resolución del challenge 4: Foro Alura del ProgramaONE de Oracle NExt Educacion")
+                                .description("Resolución del challenge 4: Foro Alura del ProgramaONE de Oracle Next Educacion")
                                 .contact(contacto));
                 api.components(new Components()
                                 .addSecuritySchemes("bearer-key",

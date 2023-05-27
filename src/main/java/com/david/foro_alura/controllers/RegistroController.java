@@ -23,7 +23,7 @@ public class RegistroController {
     private UsuarioService usuarioService;
 
     @Operation(summary = "Registro", description = "Se envian email, y password para registrarlos en la API\n" +
-            "Nota: Por defecto se crear los usuarios con el Rol USUARIO, para el primer admin debera actualizar el rol directamente desde la base de datos")
+            "Nota: Por defecto se crear los usuarios con el Rol USUARIO, unicamente si la base de datos no hay usuario cargados, se creara el primer usuario con el rol ADMIN")
     @PostMapping
     public ResponseEntity<String> registroUsuario(
             @RequestBody @Valid RegistroUsuarioRequest registroUsuario) throws DuplicadoException {

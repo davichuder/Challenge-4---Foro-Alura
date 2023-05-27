@@ -29,7 +29,7 @@ public class LoginController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Operation(summary = "Login", description = "Una vez registrado se envia email, y password, y te devuelve un token Bearer para la utilizacion de la API")
+    @Operation(summary = "Login", description = "Una vez registrado se envia email, y password, y te devuelve un token Bearer con duracion de 24 horas para la utilizacion de la API")
     @PostMapping
     public ResponseEntity<JwtTokenResponse> login(@RequestBody @Valid LoginRequest loginUsuario) {
         UsernamePasswordAuthenticationToken credenciales = new UsernamePasswordAuthenticationToken(loginUsuario.email(),

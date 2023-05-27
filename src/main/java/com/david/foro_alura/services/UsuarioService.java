@@ -12,6 +12,7 @@ import com.david.foro_alura.dto.usuario.ModificarRolUsuarioRequest;
 import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.dto.usuario.UsuarioResponse;
 import com.david.foro_alura.entity.Usuario;
+import com.david.foro_alura.enums.Rol;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.repository.UsuarioRepository;
@@ -32,7 +33,11 @@ public class UsuarioService {
         if (usuarioRepository.existsByEmail(registroUsuario.email())) {
             throw new DuplicadoException("email");
         }
-        usuarioRepository.save(new Usuario(registroUsuario));
+        Usuario usuario = new Usuario(registroUsuario);
+        if (!usuarioRepository.hayUsuarios()) {
+            usuario.setRol(Rol.ADMIN);
+        }
+        usuarioRepository.save(usuario);
     }
 
     public void desactivarCuenta(HttpServletRequest request) throws NoExisteException {
