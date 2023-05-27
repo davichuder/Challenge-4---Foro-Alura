@@ -11,14 +11,19 @@ import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.services.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "1. Registro", description = "Free Access")
 @Controller
 @RequestMapping("/registro")
 public class RegistroController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Operation(summary = "Registro", description = "Se envian email, y password para registrarlos en la API\n" +
+            "Nota: Por defecto se crear los usuarios con el Rol USUARIO, para el primer admin debera actualizar el rol directamente desde la base de datos")
     @PostMapping
     public ResponseEntity<String> registroUsuario(
             @RequestBody @Valid RegistroUsuarioRequest registroUsuario) throws DuplicadoException {

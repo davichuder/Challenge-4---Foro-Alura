@@ -77,7 +77,7 @@ public class UsuarioService {
         return modificacion;
     }
 
-    public Usuario ver(Long id) throws NoExisteException {
+    public Usuario detallesUsuario(Long id) throws NoExisteException {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if (!usuario.isPresent() || !usuario.get().getActivo()) {
             throw new NoExisteException("id");

@@ -15,8 +15,11 @@ import com.david.foro_alura.security.JwtTokenResponse;
 import com.david.foro_alura.security.LoginRequest;
 import com.david.foro_alura.security.TokenService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "2. Login")
 @Controller
 @RequestMapping("/login")
 public class LoginController {
@@ -26,12 +29,14 @@ public class LoginController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Operation(summary = "Login", description = "Una vez registrado se envia email, y password, y te devuelve un token Bearer para la utilizacion de la API")
     @PostMapping
-    public ResponseEntity<JwtTokenResponse> login(@RequestBody @Valid LoginRequest loginUsuario){
-        UsernamePasswordAuthenticationToken credenciales = new UsernamePasswordAuthenticationToken(loginUsuario.email(), loginUsuario.password());
+    public ResponseEntity<JwtTokenResponse> login(@RequestBody @Valid LoginRequest loginUsuario) {
+        UsernamePasswordAuthenticationToken credenciales = new UsernamePasswordAuthenticationToken(loginUsuario.email(),
+                loginUsuario.password());
         Authentication authentication = authenticationManager.authenticate(credenciales);
         Usuario usuario = (Usuario) authentication.getPrincipal();
-        String token = tokenService.generarToken(usuario);        
+        String token = tokenService.generarToken(usuario);
         return ResponseEntity.ok(new JwtTokenResponse(token));
     }
 }
