@@ -28,7 +28,7 @@ public class Curso {
         this.categoria = categoria;
     }
 
-    public void actualizar(String nombre, Categoria categoria) {
+    public void modificar(String nombre, Categoria categoria) {
         this.nombre = nombre;
         this.categoria = categoria;
     }

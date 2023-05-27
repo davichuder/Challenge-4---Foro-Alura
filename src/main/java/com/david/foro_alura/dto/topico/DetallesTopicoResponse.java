@@ -1,10 +1,7 @@
 package com.david.foro_alura.dto.topico;
 
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import com.david.foro_alura.dto.respuesta.RespuestaResponse;
 import com.david.foro_alura.entity.Topico;
 import com.david.foro_alura.enums.Estatus;
 import com.david.foro_alura.enums.Tag;
@@ -17,7 +14,7 @@ public record DetallesTopicoResponse(Long id,
         Estatus estatus,
         Long idCurso,
         Tag tag,
-        List<RespuestaResponse> respuestasResponse) {
+        Integer cantidadRespuestas) {
 
     public DetallesTopicoResponse(Topico topico) {
         this(topico.getId(),
@@ -28,6 +25,6 @@ public record DetallesTopicoResponse(Long id,
                 topico.getEstatus(),
                 topico.getCurso().getId(),
                 topico.getTag(),
-                topico.getRespuestas().stream().map(RespuestaResponse::new).collect(Collectors.toList()));
+                null);
     }
 }

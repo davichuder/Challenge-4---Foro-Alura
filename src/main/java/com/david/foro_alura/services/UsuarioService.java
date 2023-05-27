@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.david.foro_alura.dto.usuario.DesactivarUsuarioRequest;
-import com.david.foro_alura.dto.usuario.ModificarUsuarioRequest;
+import com.david.foro_alura.dto.usuario.ActualizarUsuarioRequest;
+import com.david.foro_alura.dto.usuario.ModificarRolUsuarioRequest;
 import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.dto.usuario.UsuarioResponse;
 import com.david.foro_alura.entity.Usuario;
@@ -16,11 +16,18 @@ import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.repository.UsuarioRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+
 @Service
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private RequestService requestService;
+
+    @Transactional
     public void registro(RegistroUsuarioRequest registroUsuario) throws DuplicadoException {
         if (usuarioRepository.existsByEmail(registroUsuario.email())) {
             throw new DuplicadoException("email");
@@ -28,29 +35,45 @@ public class UsuarioService {
         usuarioRepository.save(new Usuario(registroUsuario));
     }
 
-    public Page<UsuarioResponse> listado(Pageable paginacion) {
-        return usuarioRepository.findAllByActivo(true, paginacion).map(UsuarioResponse::new);
-    }
-
-    public void desactivar(DesactivarUsuarioRequest desactivarUsuario) throws NoExisteException {
-        Optional<Usuario> usuario = usuarioRepository.findById(desactivarUsuario.id());
+    public void desactivarCuenta(HttpServletRequest request) throws NoExisteException {
+        Optional<Usuario> usuario = usuarioRepository.buscarPorEmail(requestService.obtenerEmail(request));
         if (!usuario.isPresent()) {
             throw new NoExisteException("id");
         }
-        Usuario desactivar = usuario.get();
-        desactivar.desactivar();
+        usuario.get().desactivar();
     }
 
-    public Usuario modificar(ModificarUsuarioRequest modificarUsuario) throws NoExisteException, DuplicadoException {
-        Optional<Usuario> usuario = usuarioRepository.findById(modificarUsuario.id());
+    @Transactional
+    public void desactivar(Long idUsuario) throws NoExisteException {
+        Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+        if (!usuario.isPresent()) {
+            throw new NoExisteException("idUsuario");
+        }
+        usuario.get().desactivar();
+    }
+
+    @Transactional
+    public Usuario actualizarCuenta(HttpServletRequest request,
+            ActualizarUsuarioRequest actualizarUsuario) throws NoExisteException, DuplicadoException {
+        Optional<Usuario> usuario = usuarioRepository.buscarPorEmail(requestService.obtenerEmail(request));
         if (!usuario.isPresent()) {
             throw new NoExisteException("id");
         }
-        if (usuarioRepository.existsByEmail(modificarUsuario.email())){
+        if(usuarioRepository.existsByEmail(actualizarUsuario.email())){
             throw new DuplicadoException("email");
         }
+        usuario.get().actualizar(actualizarUsuario);
+        return usuario.get();
+    }
+
+    @Transactional
+    public Usuario modificar(Long idUsuario, ModificarRolUsuarioRequest modificarUsuario) throws NoExisteException, DuplicadoException {
+        Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+        if (!usuario.isPresent()) {
+            throw new NoExisteException("id");
+        }
         Usuario modificacion = usuario.get();
-        modificacion.actualizar(modificarUsuario);
+        modificacion.modificar(modificarUsuario);
         return modificacion;
     }
 
@@ -60,5 +83,9 @@ public class UsuarioService {
             throw new NoExisteException("id");
         }
         return usuario.get();
+    }
+
+    public Page<UsuarioResponse> listado(Pageable paginacion) {
+        return usuarioRepository.findAllByActivo(true, paginacion).map(UsuarioResponse::new);
     }
 }

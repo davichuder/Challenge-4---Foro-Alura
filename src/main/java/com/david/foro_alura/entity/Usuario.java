@@ -8,7 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.david.foro_alura.dto.usuario.ModificarUsuarioRequest;
+import com.david.foro_alura.dto.usuario.ActualizarUsuarioRequest;
+import com.david.foro_alura.dto.usuario.ModificarRolUsuarioRequest;
 import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.enums.Rol;
 
@@ -46,9 +47,13 @@ public class Usuario implements UserDetails{
 		this.rol = Rol.USUARIO;
 	}
 
-	public void actualizar(ModificarUsuarioRequest modificarUsuario) {
-		this.email = modificarUsuario.email();
-		this.password = modificarUsuario.password();
+	public void actualizar(ActualizarUsuarioRequest actualizar) {
+		this.email = actualizar.email();
+		this.password = new BCryptPasswordEncoder().encode(actualizar.password());
+	}
+
+	public void modificar(ModificarRolUsuarioRequest modificarRolUsuario) {
+		this.rol = modificarRolUsuario.rol();
 	}
 
 	public void desactivar() {
@@ -82,6 +87,6 @@ public class Usuario implements UserDetails{
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return this.activo;
 	}
 }

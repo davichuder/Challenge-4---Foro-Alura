@@ -28,7 +28,7 @@ public class Categoria {
         this.nombre = nuevaCategoria.nombre();
     }
 
-    public void actualizar(ModificarCategoriaRequest modificarCategoria) {
+    public void modificar(ModificarCategoriaRequest modificarCategoria) {
         this.nombre = modificarCategoria.nombre();
     }
 }

@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record NuevoTopicoRequest(@NotNull Long idCurso,
-                @NotNull Long idUsuario,
                 @NotBlank String titulo,
                 @NotBlank String mensaje,
                 @NotNull Tag tag) {

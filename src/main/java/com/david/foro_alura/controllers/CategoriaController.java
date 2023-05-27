@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,47 +19,46 @@ import com.david.foro_alura.dto.categoria.NuevaCategoriaRequest;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.dto.categoria.CategoriaResponse;
-import com.david.foro_alura.dto.categoria.EliminarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.ModificarCategoriaRequest;
 import com.david.foro_alura.services.CategoriaService;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/categorias")
+@PreAuthorize("isAuthenticated()")
 public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
     @PostMapping
-    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<CategoriaResponse> nuevaCategoria(
             @RequestBody @Valid NuevaCategoriaRequest nuevaCategoria) throws DuplicadoException {
         return ResponseEntity.ok(new CategoriaResponse(categoriaService.nueva(nuevaCategoria)));
     }
 
-    @RequestMapping
-    public ResponseEntity<Page<CategoriaResponse>> listadoCategorias(@PageableDefault(size = 10) Pageable paginacion) {
-        return ResponseEntity.ok(categoriaService.listado(paginacion));
-    }
-
-    @DeleteMapping
-    @Transactional
-    public ResponseEntity<Object> eliminarCategoria(@RequestBody @Valid EliminarCategoriaRequest eliminarCategoria) throws NoExisteException {
-        categoriaService.eliminar(eliminarCategoria);
+    @DeleteMapping("/{idCategoria}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Object> eliminarCategoria(@PathVariable Long idCategoria) throws NoExisteException {
+        categoriaService.eliminar(idCategoria);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
-    @Transactional
-    public ResponseEntity<CategoriaResponse> modificarCategoria(
-            @RequestBody @Valid ModificarCategoriaRequest modificarCategoria) throws NoExisteException {
-        return ResponseEntity.ok(new CategoriaResponse(categoriaService.modificar(modificarCategoria)));
+    @PutMapping("/{idCategoria}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<CategoriaResponse> modificarCategoria(@PathVariable Long idCategoria,
+            @RequestBody @Valid ModificarCategoriaRequest modificarCategoria) throws NoExisteException, DuplicadoException {
+        return ResponseEntity.ok(new CategoriaResponse(categoriaService.modificar(idCategoria, modificarCategoria)));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> verCategoria(@PathVariable Long id) throws NoExisteException {
-        return ResponseEntity.ok(new CategoriaResponse(categoriaService.ver(id)));
+    @GetMapping("/{idCategoria}")
+    public ResponseEntity<CategoriaResponse> verCategoria(@PathVariable Long idCategoria) throws NoExisteException {
+        return ResponseEntity.ok(new CategoriaResponse(categoriaService.ver(idCategoria)));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<CategoriaResponse>> listadoCategorias(@PageableDefault(size = 10) Pageable paginacion) {
+        return ResponseEntity.ok(categoriaService.listado(paginacion));
     }
 }

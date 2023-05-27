@@ -1,7 +1,6 @@
 package com.david.foro_alura.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import com.david.foro_alura.dto.topico.ModificarTopicoRequest;
 import com.david.foro_alura.dto.topico.NuevoTopicoRequest;
@@ -15,7 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -49,9 +47,6 @@ public class Topico {
     @Enumerated(EnumType.STRING)
     private Tag tag;
 
-    @OneToMany
-    private List<Respuesta> respuestas;
-
     public Topico(NuevoTopicoRequest nuevoTopico, Usuario usuario, Curso curso) {
         this.usuario = usuario;
         this.titulo = nuevoTopico.titulo();
@@ -62,14 +57,8 @@ public class Topico {
         this.tag = nuevoTopico.tag();
     }
 
-    public void agregarRespuesta(Respuesta respuesta) {
-        this.respuestas.add(respuesta);
-        if (this.respuestas.size() > 0){
-            this.estatus = Estatus.SIN_SOLUCION;   
-        }
-    }
 
-    public void actualizar(ModificarTopicoRequest modificarTopico, Curso curso) {
+    public void modificar(ModificarTopicoRequest modificarTopico, Curso curso) {
         this.titulo = modificarTopico.titulo();
         this.mensaje = modificarTopico.mensaje();
         this.tag = modificarTopico.tag();
@@ -78,9 +67,5 @@ public class Topico {
 
     public void marcarComoResuelto() {
         this.estatus = Estatus.RESUELTO;
-    }
-
-    public void removerRespuesta(Respuesta respuesta) {
-        this.respuestas.remove(respuesta);
     }
 }

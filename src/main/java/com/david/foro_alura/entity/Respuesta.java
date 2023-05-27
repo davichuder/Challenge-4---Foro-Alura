@@ -35,14 +35,18 @@ public class Respuesta {
 
     private Boolean mejorRespuesta;
 
-    public Respuesta(NuevaRespuestaRequest nuevaRespuesta, Usuario usuario) {
+    @ManyToOne
+    private Topico topico;
+
+    public Respuesta(NuevaRespuestaRequest nuevaRespuesta, Usuario usuario, Topico topico) {
         this.usuario = usuario;
         this.mensaje = nuevaRespuesta.mensaje();
         this.fechaDeCreacion = new Date();
         this.mejorRespuesta = false;
+        this.topico = topico;
     }
 
-    public void actualizar(ModificarRespuestaRequest modificarRespuesta) {
+    public void modificar(ModificarRespuestaRequest modificarRespuesta) {
         this.mensaje = modificarRespuesta.mensaje();
     }
 

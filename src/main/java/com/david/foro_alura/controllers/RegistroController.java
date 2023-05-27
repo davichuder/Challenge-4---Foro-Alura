@@ -11,7 +11,6 @@ import com.david.foro_alura.dto.usuario.RegistroUsuarioRequest;
 import com.david.foro_alura.exceptions.DuplicadoException;
 import com.david.foro_alura.services.UsuarioService;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Controller
@@ -21,7 +20,6 @@ public class RegistroController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    @Transactional
     public ResponseEntity<String> registroUsuario(
             @RequestBody @Valid RegistroUsuarioRequest registroUsuario) throws DuplicadoException {
         usuarioService.registro(registroUsuario);

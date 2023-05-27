@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.david.foro_alura.dto.categoria.CategoriaResponse;
-import com.david.foro_alura.dto.categoria.EliminarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.ModificarCategoriaRequest;
 import com.david.foro_alura.dto.categoria.NuevaCategoriaRequest;
 import com.david.foro_alura.entity.Categoria;
@@ -17,12 +16,14 @@ import com.david.foro_alura.exceptions.NoExisteException;
 import com.david.foro_alura.repository.CategoriaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Transactional
     public Categoria nueva(NuevaCategoriaRequest nuevaCategoria) throws DuplicadoException {
         if (categoriaRepository.existsByNombre(nuevaCategoria.nombre())){
             throw new DuplicadoException("nombre");
@@ -30,32 +31,37 @@ public class CategoriaService {
         return categoriaRepository.save(new Categoria(nuevaCategoria));
     }
 
-    public Page<CategoriaResponse> listado(Pageable paginacion) {
-        return categoriaRepository.findAll(paginacion).map(CategoriaResponse::new);
-    }
-
-    public void eliminar(EliminarCategoriaRequest eliminarCategoria) throws NoExisteException {
-        if (!categoriaRepository.existsById(eliminarCategoria.id())) {
-            throw new NoExisteException("id");
+    @Transactional
+    public void eliminar(Long idCategoria) throws NoExisteException {
+        if (!categoriaRepository.existsById(idCategoria)) {
+            throw new NoExisteException("idCategoria");
         }
-        categoriaRepository.deleteById(eliminarCategoria.id());
+        categoriaRepository.deleteById(idCategoria);
     }
 
-    public Categoria modificar(ModificarCategoriaRequest modificarCategoria) throws NoExisteException {
-        Optional<Categoria> categoria = categoriaRepository.findById(modificarCategoria.id());
+    @Transactional
+    public Categoria modificar(Long idCategoria, ModificarCategoriaRequest modificarCategoria) throws NoExisteException, DuplicadoException {
+        Optional<Categoria> categoria = categoriaRepository.findById(idCategoria);
         if (!categoria.isPresent()) {
-            throw new NoExisteException("id");
+            throw new NoExisteException("idCategoria");
+        }
+        if (categoriaRepository.existsByNombre(modificarCategoria.nombre())){
+            throw new DuplicadoException("idCategoria");
         }
         Categoria modificacion = categoria.get();
-        modificacion.actualizar(modificarCategoria);
+        modificacion.modificar(modificarCategoria);
         return modificacion;
     }
 
-    public Categoria ver(Long id) {
-        Optional<Categoria> categoria = categoriaRepository.findById(id);
+    public Categoria ver(Long idCategoria) {
+        Optional<Categoria> categoria = categoriaRepository.findById(idCategoria);
         if (!categoria.isPresent()) {
             throw new EntityNotFoundException("Error el ID de la categoria no existe");
         }
         return categoria.get();
+    }
+
+    public Page<CategoriaResponse> listado(Pageable paginacion) {
+        return categoriaRepository.findAll(paginacion).map(CategoriaResponse::new);
     }
 }

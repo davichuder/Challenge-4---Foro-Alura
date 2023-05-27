@@ -2,5 +2,5 @@ package com.david.foro_alura.dto.respuesta;
 
 import jakarta.validation.constraints.NotNull;
 
-public record EliminarRespuestaRequest(@NotNull Long id) {
+public record SolucionRespuestaRequest(@NotNull Long idTopico, @NotNull Long idRespuesta) {
 }
