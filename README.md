@@ -36,7 +36,7 @@ Para ejecutar este repositorio realice los siguientes pasos:
 1. Clone el repositorio en donde guste
 2. Ejecute script.sql para realizar la creacion de la base de datos que se utilizara a futuro
 3. En VS Code dirigase a "Run", y luego a "Start Debugging"
-4. En su navegador digijase a [aqui](http://localhost:8181/swagger-ui/index.html) para leer la documentacion de los endpoints del proyecto
+4. En su navegador dirijase a [aqui](http://localhost:8181/swagger-ui/index.html) para leer la documentacion de los endpoints del proyecto
 5. Disfrute la API REST
     
 ## Documentacion
